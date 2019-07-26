@@ -2,6 +2,7 @@ package main
 
 import (
 	"echo"
+	"fmt"
 	"net/http"
 	"strings"
 
@@ -39,19 +40,21 @@ func main() {
 	// Find and visit all links
 	c.OnHTML(Baseroot, func(e *colly.HTMLElement) {
 
-		// e.ForEach("tr > td:nth-child(2) > font", func(_ int, el *colly.HTMLElement) {
-		// 	if el.Text != "ชื่อรายวิชา" {
-		// 		// fmt.Println(el.Text)
-		// 		couse = append(couse, el.Text)
+		e.ForEach("tr > td:nth-child(2) > font", func(_ int, el *colly.HTMLElement) {
+			if el.Text != "ชื่อรายวิชา" {
+				// fmt.Println((el.Text))
+				for i := 0; i < len(el.Text); i++ {
+					if int(el.Text[i]) > 160 {
+						// fmt.Println(string([]rune(el.Text)[i])) // UTF-8
+						s := strings.Split(el.Text, string([]rune(el.Text)[i]))
+						srt := s[1]
+						s1 := string([]rune(el.Text)[i]) + srt[0:]
+						s[1] = s1
+						fmt.Println(s)
+						break
+					}
+				}
 
-		// 	}
-		// })
-		// e.ForEach("tr > td > font", func(_ int, el *colly.HTMLElement) {
-		// 	fmt.Println(el.Index, el.Text)
-		// })
-		e.ForEach("tr > td:nth-child(1) > font", func(_ int, el *colly.HTMLElement) {
-			if el.Text != "รหัสวิชา" {
-				// fmt.Println(el.Text)
 				// couse = append(couse, el.Text)
 
 			}
