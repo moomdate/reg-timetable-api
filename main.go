@@ -2,9 +2,9 @@ package main
 
 import (
 	"echo"
-	"encoding/json"
 	"fmt"
 	"net/http"
+	"strings"
 
 	"github.com/gocolly/colly"
 )
@@ -19,6 +19,7 @@ type CourseDetail struct {
 // Course in register this term
 type Course struct {
 	CourseList []string `json:"course_list"`
+	Data       []CourseDetail
 }
 
 func main() {
@@ -50,6 +51,13 @@ func main() {
 		})
 
 	})
+	c.OnHTML("body > table > tbody > tr:nth-child(1) > td:nth-child(3) > table:nth-child(3) > tbody > tr:nth-child(7) > td:nth-child(2) > font > font", func(e *colly.HTMLElement) {
+		// fmt.Println(e.Text)
+		es := strings.Split(e.Text, "/")
+		// es2 := strings.Split(es[1], "/")
+		fmt.Println(es[0]) // acadyear
+		fmt.Println(es[1]) // semester
+	})
 
 	c.OnRequest(func(r *colly.Request) {
 		// fmt.Println("heard", r.Headers)
@@ -59,12 +67,20 @@ func main() {
 	})
 
 	c.Visit(url)
+	courseD := CourseDetail{
+		Name:  "keng",
+		Group: 1,
+		Time:  []string{"1-2", "2-3"},
+	}
+	// var cd []CourseDetail
 	// fmt.Println(len(couse))
+	// cd = append(cd, courseD)
 	course := &Course{
 		CourseList: couse,
+		Data:       append([]CourseDetail{}, courseD),
 	}
-	coursList, _ := json.Marshal(course)
-	fmt.Println(string(coursList))
+	// coursList, _ := json.Marshal(course)
+	// fmt.Println(string(coursList))
 	e := echo.New()
 	e.GET("/", func(c echo.Context) error {
 		return c.JSON(http.StatusOK, course)
