@@ -2,7 +2,6 @@ package main
 
 import (
 	"echo"
-	"fmt"
 	"net/http"
 	"strings"
 
@@ -36,31 +35,6 @@ type Course struct {
 func main() {
 	// fmt.Println(A)
 	c := colly.NewCollector()
-	// var couse []string
-	// Find and visit all links
-	c.OnHTML(Baseroot, func(e *colly.HTMLElement) {
-
-		e.ForEach("tr > td:nth-child(2) > font", func(_ int, el *colly.HTMLElement) {
-			if el.Text != "ชื่อรายวิชา" {
-				// fmt.Println((el.Text))
-				for i := 0; i < len(el.Text); i++ {
-					if int(el.Text[i]) > 160 {
-						// fmt.Println(string([]rune(el.Text)[i])) // UTF-8
-						s := strings.Split(el.Text, string([]rune(el.Text)[i]))
-						srt := s[1]
-						s1 := string([]rune(el.Text)[i]) + srt[0:]
-						s[1] = s1
-						fmt.Println(s)
-						break
-					}
-				}
-
-				// couse = append(couse, el.Text)
-
-			}
-		})
-
-	})
 	var cid, gid, cname string
 	// var courseD CourseDetail
 	// var coursess Course
@@ -80,7 +54,18 @@ func main() {
 				}
 				if el.Index == 1 {
 					// fmt.Println(el.Text)
-					cname = el.Text
+					for i := 0; i < len(el.Text); i++ {
+						if int(el.Text[i]) > 160 {
+							// fmt.Println(string([]rune(el.Text)[i])) // UTF-8
+							s := strings.Split(el.Text, string([]rune(el.Text)[i]))
+							srt := s[1]
+							s1 := string([]rune(el.Text)[i]) + srt[0:]
+							s[1] = s1
+							cname = s[0] + " " + strings.TrimSpace(s[1])
+							// fmt.Println(s)
+							break
+						}
+					}
 				}
 				if el.Index == 2 {
 					// fmt.Println(el.Text)
