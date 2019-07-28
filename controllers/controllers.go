@@ -1,11 +1,13 @@
 package controllers
 
 import (
+	"net/http"
 	"strings"
+
 	"github.com/gocolly/colly"
 	"github.com/labstack/echo"
-	"net/http"
 )
+
 // CourseDetail ...
 type CourseDetail struct {
 	Name     string `json:"name"`
@@ -30,31 +32,32 @@ type Course struct {
 	Semester string         `json:"_semester"`
 	Data     []CourseDetail `json:"course_list"`
 }
+
 // RenderCourseDetail ...
-func RenderCourseDetail(ce echo.Context)  error {
-	
+func RenderCourseDetail(ce echo.Context) error {
+
 	stdid := ce.Param("stdid")
 	acadyears := ce.Param("acadyear")
 	semesters := ce.Param("semester")
 	// sli := string(stdid[0])
 	// stdCheck := strings.Split(stdid, string([]rune(stdid)[0]))
-	
+
 	if strings.ToUpper(stdid[0:1]) == "B" {
-		stdid = "1"+stdid[1:]
+		stdid = "1" + stdid[1:]
 	} else if strings.ToUpper(stdid[0:1]) == "M" {
-		stdid = "2"+stdid[1:]
+		stdid = "2" + stdid[1:]
 	} else {
-		stdid = "3"+stdid[1:]
+		stdid = "3" + stdid[1:]
 	}
 	// fmt.Println(stdid)
-	URL := "http://reg5.sut.ac.th/registrar/learn_time.asp?f_cmd=2&studentid="+ stdid + "&acadyear=" +acadyears+ "&maxsemester=3&rnd=43673.6771527778&firstday=22/7/2562&semester="+semesters
+	URL := "http://reg5.sut.ac.th/registrar/learn_time.asp?f_cmd=2&studentid=" + stdid + "&acadyear=" + acadyears + "&maxsemester=3&rnd=43673.6771527778&firstday=22/7/2562&semester=" + semesters
 
 	// srt := stdid+acadyears+semesters
 	// fmt.Println(srt)
 	// return c.String(http.StatusOK, srt)
-	
+
 	c := colly.NewCollector()
-	var cid, gid, cname,ver string
+	var cid, gid, cname, ver string
 	// var courseD CourseDetail
 	// var coursess Course
 	var Data []CourseDetail
@@ -95,7 +98,7 @@ func RenderCourseDetail(ce echo.Context)  error {
 				Name:     cname,
 				Group:    gid,
 				CourseID: cid,
-				Version: ver,
+				Version:  ver,
 			}
 
 			Data = append(Data, courseD)
@@ -114,6 +117,18 @@ func RenderCourseDetail(ce echo.Context)  error {
 		Acadyear: acadyears,
 		Semester: semesters,
 		Data:     Data,
+	}
+	return ce.JSON(http.StatusOK, couses)
+}
+func RenderCourseDetail2(ce echo.Context) error {
+
+	stdid := ce.Param("stdid")
+	acadyears := ce.Param("acadyear")
+	semesters := ce.Param("semester")
+	x := acadyears + stdid
+	couses := &Course{
+		Acadyear: x,
+		Semester: semesters,
 	}
 	return ce.JSON(http.StatusOK, couses)
 }
